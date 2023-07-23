@@ -85,6 +85,7 @@ for idx=total_start_idx:total_end_idx
             (1 + (1 - ck(i)) * 1e5)*param.meas_n_foot_height *dt;
     end
 
+    % Covariance propagation
     P01 = F*cov_list(:,:,k)*F' + sipo_conf.Q1 + B*sipo_conf.Q2*B';
  
     hat_wk = re_sensor_data.gyro_body_IMU.Data(idx,:)';
@@ -95,7 +96,7 @@ for idx=total_start_idx:total_end_idx
 
     y = full(sipo_conf.r(x01, hat_wk, hat_phik, hat_dphik, hat_yawk));
     H = full(sipo_conf.dr(x01, hat_wk, hat_phik, hat_dphik, hat_yawk));
-
+    
     S = H*P01*H' + sipo_conf.R;
 
     mask = ones(sipo_conf.meas_size,1);

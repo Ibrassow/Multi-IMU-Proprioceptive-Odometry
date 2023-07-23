@@ -52,39 +52,62 @@ param.ctrl_n_gyro = 1e-3;
 param.ctrl_n_foot1_acc = 1e-1;
 param.ctrl_n_foot2_acc = 1e-1;
 param.ctrl_n_foot3_acc = 1e-1;
-param.ctrl_n_foot4_acc = 1e-1;
+param.ctrl_n_foot4_acc = 1e-1;  
 
 param.meas_n_fk_pos = 0.001;
 param.meas_n_fk_vel = 0.01;
 param.meas_n_foot_height = 0.001;
 param.meas_n_zero_vel = 0.01;      % for foot imu
 
-
-%% run baseline sipo filter 
+%{
+%% Run baseline SIPO filter
 tic 
 [sipo_state_list] = run_sipo(re_sensor_data, param);
 sipo_time = toc
-%% run mipo filter 
+%}
+
 param.mipo_use_foot_ang_contact_model = 1; % 0 means use zero velocity model
 param.mipo_use_md_test_flag = 1;           % 0 means use contact flag
+
+%{
+%% Run MIPO filter
 tic 
 [mipo_state_list] = run_mipo(re_sensor_data, param);
 mipo_time = toc
+%}
+
+%% Run MIQPO filter
+tic
+[miqpo_state_list] = run_mipo_quat(re_sensor_data, param);
+miqpo_time = toc
+
+
 %%
 plot_start=1;
-plot_end = size(sipo_state_list(end,:),2);
+%plot_end = size(sipo_state_list(end,:),2);
+plot_end = size(miqpo_state_list(end,:),2);
 figure(69);clf;
+
 if param.has_mocap == 1
     plot3(re_sensor_data.pos_mocap.Data(:,1),re_sensor_data.pos_mocap.Data(:,2),re_sensor_data.pos_mocap.Data(:,3), 'LineWidth',1.3)
     hold on;
 end
+
+%{
 plot3(movmean(sipo_state_list(1,plot_start:plot_end),5,1), ...
       movmean(sipo_state_list(2,plot_start:plot_end),5,1), ...
       movmean(sipo_state_list(3,plot_start:plot_end),5,1), 'LineWidth',1.3);
-hold on;
-plot3(mipo_state_list(1,plot_start:plot_end),mipo_state_list(2,plot_start:plot_end),mipo_state_list(3,plot_start:plot_end), 'LineWidth',1.3);
 
-legend("Ground truth", "SIPO","MIPO", "Location","northeast")
+
+hold on;
+
+plot3(mipo_state_list(1,plot_start:plot_end),mipo_state_list(2,plot_start:plot_end),mipo_state_list(3,plot_start:plot_end), 'LineWidth',1.3);
+%}
+hold on;
+
+plot3(miqpo_state_list(1,plot_start:plot_end),miqpo_state_list(2,plot_start:plot_end),miqpo_state_list(3,plot_start:plot_end), 'LineWidth',1.3);
+
+legend("Ground truth", "SIPO","MIPO", "MIQPO", "Location","northeast")
 axis equal
 
 xlabel("X Position (m)")
