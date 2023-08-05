@@ -45,7 +45,7 @@ kf_conf.ctrl_size = 19;
 % process noise
 kf_conf.Q1 = diag([1e-4*ones(3,1); 
            1e-2*ones(3,1); 
-           1e-6*ones(3,1);
+           1e-5*ones(3,1);
            repmat(...
            [1e-4*ones(2,1);  % foot1 pos x y
             1e-4*ones(1,1);  % foot1 pos z
@@ -87,12 +87,12 @@ kf_conf.R = 1e-2*eye(kf_conf.meas_size);
   end
 
 
-  % get process and process jacobians
-  s_xk = casadi.MX.sym('X_k', kf_conf.state_size);
-  s_uk = casadi.MX.sym('Uk', kf_conf.ctrl_size);
-  s_uk1 = casadi.MX.sym('Uk1', kf_conf.ctrl_size);
-  s_dt = casadi.MX.sym('dt', 1);
-  s_f = dyn_rk4_quat(s_xk , s_uk, s_uk1, s_dt, @mipo_process_dyn_quat); % EKF process
+% get process and process jacobians
+s_xk = casadi.MX.sym('X_k', kf_conf.state_size);
+s_uk = casadi.MX.sym('Uk', kf_conf.ctrl_size);
+s_uk1 = casadi.MX.sym('Uk1', kf_conf.ctrl_size);
+s_dt = casadi.MX.sym('dt', 1);
+s_f = dyn_rk4_quat(s_xk , s_uk, s_uk1, s_dt, @mipo_process_dyn_quat); % EKF process
 
 
 %% TODO -- 
@@ -100,21 +100,18 @@ H = [MX.zeros(1, 3); MX.eye(3)];
 G = @(q) Lq(q) * H; 
 
 % at k
-Ek = casadi.MX(eye(53, 52));
-
-
+Ek = casadi.MX(zeros(53, 52));
+Ek(1:6,1:6) = eye(6);
 Ek(7:10, 7:9) = G(s_xk(7:10)); 
-% foot vel depends on quat (?) ~ rotation matrix
-Ek(7:10, 14:16) = G(s_xk(7:10)); 
-Ek(7:10, 20:22) = G(s_xk(7:10)); 
-Ek(7:10, 26:28) = G(s_xk(7:10)); 
-Ek(7:10, 32:34) = G(s_xk(7:10)); 
+Ek(11:53, 10:52) = eye(43);
+
 
 % at k+1
-Ek1 = casadi.MX(eye(53, 52));
-s_xk1 = dyn_rk4_quat(s_xk, s_uk, s_uk1, s_dt, @mipo_process_dyn_quat);
+Ek1 = casadi.MX(zeros(53, 52));
+s_xk1 = dyn_rk4_quat(s_xk, s_uk1, s_uk1, s_dt, @mipo_process_dyn_quat);
+Ek1(1:6,1:6) = eye(6);
 Ek1(7:10, 7:9) = G(s_xk1(7:10)); 
-
+Ek1(11:53, 10:52) = eye(43);
 
 
 
@@ -138,19 +135,12 @@ s_foot_gyrok = casadi.MX.sym('foot_gyro', 12);
 s_r = mipo_measurement_quat(s_xk, s_wk, s_phik, s_dphik, s_yawk, s_foot_gyrok, param);
 
 
-%%% TODO
 
-Ekm = casadi.MX(eye(53, 52));
+Ekm = casadi.MX(zeros(53, 52));
+Ekm(1:6,1:6) = eye(6);
+Ekm(7:10, 7:9) = G(s_xk(7:10)); 
+Ekm(11:53, 10:52) = eye(43);
 
-meas_per_leg = param.mipo_meas_per_leg;
-
-for i = 1:param.num_leg
-
-  Ekm(7:10, (i-1)*meas_per_leg+1:(i-1)*meas_per_leg+3) = G(s_xk(7:10)); 
-  Ekm(7:10, (i-1)*meas_per_leg+4:(i-1)*meas_per_leg+6) = G(s_xk(7:10)); 
-  Ekm(7:10, (i-1)*meas_per_leg+7:(i-1)*meas_per_leg+9) = G(s_xk(7:10)); 
-
-end
 
 s_R = jacobian(s_r, s_xk) * Ekm; 
 % yaw ? 

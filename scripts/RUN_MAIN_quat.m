@@ -69,16 +69,15 @@ sipo_time = toc
 param.mipo_use_foot_ang_contact_model = 1; % 0 means use zero velocity model
 param.mipo_use_md_test_flag = 1;           % 0 means use contact flag
 
-%{
+
 %% Run MIPO filter
 tic 
-[mipo_state_list] = run_mipo(re_sensor_data, param);
+%[mipo_state_list, mipo_cov_list] = run_mipo(re_sensor_data, param);
 mipo_time = toc
-%}
 
 %% Run MIQPO filter
 tic
-[miqpo_state_list] = run_mipo_quat(re_sensor_data, param);
+[miqpo_state_list, cov_list] = run_mipo_quat(re_sensor_data, param);
 miqpo_time = toc
 
 

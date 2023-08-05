@@ -52,7 +52,6 @@ function meas_residual = mipo_measurement_quat(x, wk, phik, dphik, yawk, foot_gy
 
 
         % Measurement residual top 
-        % Note here ~  z = h(x) - y_mes
         meas_residual((i-1)*meas_per_leg+1:(i-1)*meas_per_leg+3) = ...
             p_rf - R_er'*(foot_pos((i-1)*3+1:(i-1)*3+3) - pos);
         meas_residual((i-1)*meas_per_leg+4:(i-1)*meas_per_leg+6) = ...

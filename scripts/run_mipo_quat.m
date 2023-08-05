@@ -1,11 +1,11 @@
-function [state_list] = run_mipo_quat(re_sensor_data, param)
+function [state_list, cov_list] = run_mipo_quat(re_sensor_data, param)
 
 
     total_steps = size(re_sensor_data.accel_body_IMU.Time,1);
     total_start_idx = param.data_start_idx;
     total_end_idx =  total_steps-1;
 
-    total_end_idx =  total_start_idx + 50;
+    total_end_idx =  total_start_idx + 1500;
 
 
 
@@ -37,7 +37,7 @@ function [state_list] = run_mipo_quat(re_sensor_data, param)
 
 
     x0_quat = [
-        init_pos;
+        init_pos + [param.proc_n_pos; param.proc_n_pos; 0.0];
         zeros(3,1);
         init_quat;
         foot_pos_vel_list;
@@ -118,6 +118,7 @@ function [state_list] = run_mipo_quat(re_sensor_data, param)
         %% Propagates dynamics and computes process jacobians
 
         x01 = full(mipo_conf.f(x_list(:,k) , uk, uk1, dt));
+        x01(7:10) = x01(7:10) / norm(x01(7:10));
 
         F = full(mipo_conf.df(x_list(:,k) , uk, uk1, dt));
         B = full(mipo_conf.db(x_list(:,k) , uk, uk1, dt));
@@ -199,23 +200,28 @@ function [state_list] = run_mipo_quat(re_sensor_data, param)
                     mask((i-1)*num_meas+7:(i-1)*num_meas+9) = zeros(3,1);
                 end
             end
-        end
+        end 
+
+        
         mask = logical(mask);
 
 
          
         % Kalman Gain * innovation
-        err_state = P01 * H(mask,:)' * (S(mask,mask)\y(mask));
-        err_state(1:9)
-
+        %err_state = P01 * H(mask,:)' * (S(mask,mask)\y(mask));
+        err_state = P01 * H' * (S\y);
+        %err_state(7:9)
         
+        conj = @(t) [t(1);-t(2:4)];
+
         % Update error states
-        x_list(1:6,k+1) = x01(1:6) - err_state(1:6); %
-        x_list(7:10,k+1) = L(x01(7:10)) * cayley_map(err_state(7:9));
-        x_list(11:end,k+1) =  x01(11:end) - err_state(10:end); %
+        x_list(1:6, k+1) = x01(1:6) - err_state(1:6); 
+        x_list(7:10, k+1) = R(x01(7:10)) * cayley_map(- err_state(7:9));
+        x_list(11:end, k+1) =  x01(11:end) - err_state(10:end); 
 
 
-        cov_list(:,:,k+1) = ( eye(mipo_conf.error_state_size)-P01*H(mask,:)'*(S(mask,mask)\H(mask,:)))*P01;
+        %cov_list(:,:,k+1) = ( eye(mipo_conf.error_state_size)-P01*H(mask,:)'*(S(mask,mask)\H(mask,:)))*P01;
+        cov_list(:,:,k+1) = ( eye(mipo_conf.error_state_size)-P01*H'*(S\H))*P01;
         cov_list(:,:,k+1) = (cov_list(:,:,k+1) + cov_list(:,:,k+1)')/2; 
         %{
         %}

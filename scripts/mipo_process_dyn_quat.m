@@ -84,7 +84,13 @@ foot3_acc = u(13:15) - foot3_ba;  % already changed to body frame
 foot4_acc = u(16:18) - foot4_ba;  % already changed to body frame
 
 
-dquat = quat_kinematics(quat, w);
+%dquat = quat_kinematics(quat, w);
+omega_mat = @(w) [0, -w(1), -w(2), -w(3);
+                w(1), 0, w(3), -w(2);
+                w(2), -w(3), 0, w(1);
+                w(3), w(2), -w(1), 0];
+dquat = 0.5 * omega_mat(w) * quat;
+
 
 R = quat_to_rot(quat);
 

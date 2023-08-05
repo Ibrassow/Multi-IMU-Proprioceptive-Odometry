@@ -1,9 +1,16 @@
-function [state_list] = run_mipo(re_sensor_data, param)
+function [state_list, cov_list] = run_mipo(re_sensor_data, param)
 
 
 total_steps = size(re_sensor_data.accel_body_IMU.Time,1);
 total_start_idx = param.data_start_idx;
 total_end_idx =  total_steps-1;
+
+
+total_end_idx =  total_start_idx + 1500;
+
+
+
+
 N = total_end_idx - total_start_idx + 1; 
 total_start_time = re_sensor_data.accel_body_IMU.Time(total_start_idx);
 disp('run MIPO');
