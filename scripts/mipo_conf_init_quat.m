@@ -67,26 +67,6 @@ kf_conf.Q2 = diag([1e-4*ones(3,1);   % BODY acc noise
 kf_conf.R = 1e-2*eye(kf_conf.meas_size);
 
 
-
-  function L_matrix = Lq(q_local)
-    % Left-multiply
-
-    w = q_local(1);
-    x = q_local(2);
-    y = q_local(3);
-    z = q_local(4);
-
-    I = eye(3);
-
-    L_matrix = casadi.MX(zeros(4, 4)); % Initialize a 4x4 CasADi matrix
-
-    L_matrix(1, 1) = w;
-    L_matrix(1, 2:end) = -[x, y, z];
-    L_matrix(2:end, 1) = [x; y; z]; 
-    L_matrix(2:end, 2:end) = w * I + skew([x, y, z]);
-  end
-
-
 % get process and process jacobians
 s_xk = casadi.MX.sym('X_k', kf_conf.state_size);
 s_uk = casadi.MX.sym('Uk', kf_conf.ctrl_size);

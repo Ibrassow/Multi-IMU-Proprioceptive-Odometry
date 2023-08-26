@@ -37,7 +37,7 @@ param.data_start_idx = 200;
 param.proc_n_pos = 0.0005;
 param.proc_n_vel_xy = 0.005;
 param.proc_n_vel_z = 0.005;
-param.proc_n_ang = 1e-7;
+param.proc_n_ang = 1e-5;
 param.proc_n_foot_pos = 1e-4;
 param.proc_n_foot_vel = 2;   % only for mipo
 param.proc_n_ba = 1e-4;
@@ -49,10 +49,10 @@ param.proc_n_foot4_ba = 1e-4;    % only for mipo
 
 param.ctrl_n_acc = 1e-1;
 param.ctrl_n_gyro = 1e-3;
-param.ctrl_n_foot1_acc = 1e-1;
-param.ctrl_n_foot2_acc = 1e-1;
-param.ctrl_n_foot3_acc = 1e-1;
-param.ctrl_n_foot4_acc = 1e-1;  
+param.ctrl_n_foot1_acc = 1;
+param.ctrl_n_foot2_acc = 1;
+param.ctrl_n_foot3_acc = 1;
+param.ctrl_n_foot4_acc = 1;  
 
 param.meas_n_fk_pos = 0.001;
 param.meas_n_fk_vel = 0.01;
@@ -106,7 +106,8 @@ hold on;
 
 plot3(miqpo_state_list(1,plot_start:plot_end),miqpo_state_list(2,plot_start:plot_end),miqpo_state_list(3,plot_start:plot_end), 'LineWidth',1.3);
 
-legend("Ground truth", "SIPO","MIPO", "MIQPO", "Location","northeast")
+% legend("Ground truth", "SIPO","MIPO", "MIQPO", "Location","northeast")
+legend("Ground truth", "MIQPO", "Location","northeast")
 axis equal
 
 xlabel("X Position (m)")
