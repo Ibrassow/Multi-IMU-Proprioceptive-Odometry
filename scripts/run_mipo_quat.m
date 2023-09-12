@@ -171,6 +171,7 @@ function [state_list, cov_list] = run_mipo_quat(re_sensor_data, param)
                     param.meas_n_foot_height;
             end
         end
+
     
         P01 = F*cov_list(:,:,k)*F' + mipo_conf.Q1 + B*mipo_conf.Q2*B';
         
@@ -180,7 +181,7 @@ function [state_list, cov_list] = run_mipo_quat(re_sensor_data, param)
         hat_dphik = re_sensor_data.joint_vel.Data(idx,:)';
     
         hat_yawk = re_sensor_data.orient_mocap_euler.Data(idx,3);
- 
+        
 
         y = full(mipo_conf.r(x01, hat_wk, hat_phik, hat_dphik, hat_yawk, gyro_IMU_bs));
         H = full(mipo_conf.dr(x01, hat_wk, hat_phik, hat_dphik, hat_yawk, gyro_IMU_bs));

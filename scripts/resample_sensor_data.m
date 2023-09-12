@@ -49,6 +49,7 @@ if param.has_mocap == 1
             end
             
         end
+
     end
     euler_angs_data(:,3) = movmean(euler_angs_data(:,3),10,1);
     re_sensor_data.orient_mocap_euler = timeseries(euler_angs_data,re_sensor_data.orient_mocap.Time,'Name',"euler angle true");

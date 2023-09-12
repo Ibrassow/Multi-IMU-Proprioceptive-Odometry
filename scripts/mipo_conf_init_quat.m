@@ -27,9 +27,12 @@ kf_conf.error_state_size = kf_conf.state_size - 1;
 %   - foot4 acc bias    (50:52)
 %   - time  tk          (53)
 
+temp_fix_yaw = 1;
+
+
 param.mipo_meas_per_leg = 11;  % 3 3 3 1 
 kf_conf.meas_size = param.mipo_meas_per_leg * param.num_leg + 1; % yaw
-param.mipo_meas_size = kf_conf.meas_size;
+param.mipo_meas_size = kf_conf.meas_size + temp_fix_yaw;
 
 kf_conf.ctrl_size = 19;  
 % control u 
@@ -64,7 +67,7 @@ kf_conf.Q2 = diag([1e-4*ones(3,1);   % BODY acc noise
            [1e-4*ones(3,1)],4,1);    % foot acc noise
                    0]);
 
-kf_conf.R = 1e-2*eye(kf_conf.meas_size);
+kf_conf.R = 1e-2*eye(kf_conf.meas_size+temp_fix_yaw);
 
 
 % get process and process jacobians
