@@ -113,9 +113,8 @@ kf_conf.db = Function('control_jac',{s_xk, s_uk, s_uk1, s_dt},{s_B});
 s_phik = casadi.MX.sym('phik', 12);
 s_wk = casadi.MX.sym('wk', 3);
 s_dphik = casadi.MX.sym('dphik', 12);
-s_yawk = casadi.MX.sym('yaw', 1);
 s_foot_gyrok = casadi.MX.sym('foot_gyro', 12);
-s_r = mipo_measurement_quat(s_xk, s_wk, s_phik, s_dphik, s_yawk, s_foot_gyrok, param);
+s_r = mipo_measurement_quat(s_xk, s_wk, s_phik, s_dphik, s_foot_gyrok, param);
 
 
 
@@ -126,10 +125,9 @@ Ekm(11:53, 10:52) = eye(43);
 
 
 s_R = jacobian(s_r, s_xk) * Ekm; 
-% yaw ? 
 
-kf_conf.r = Function('meas',{s_xk, s_wk, s_phik, s_dphik, s_yawk, s_foot_gyrok},{s_r});
-kf_conf.dr = Function('meas_jac',{s_xk, s_wk, s_phik, s_dphik, s_yawk, s_foot_gyrok},{s_R});
+kf_conf.r = Function('meas',{s_xk, s_wk, s_phik, s_dphik, s_foot_gyrok},{s_r});
+kf_conf.dr = Function('meas_jac',{s_xk, s_wk, s_phik, s_dphik, s_foot_gyrok},{s_R});
 
 
 

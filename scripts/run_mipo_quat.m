@@ -179,12 +179,10 @@ function [state_list, cov_list] = run_mipo_quat(re_sensor_data, param)
         hat_wk = re_sensor_data.gyro_body_IMU.Data(idx,:)';
         hat_phik = re_sensor_data.joint_ang.Data(idx,:)';
         hat_dphik = re_sensor_data.joint_vel.Data(idx,:)';
-    
-        hat_yawk = re_sensor_data.orient_mocap_euler.Data(idx,3);
         
 
-        y = full(mipo_conf.r(x01, hat_wk, hat_phik, hat_dphik, hat_yawk, gyro_IMU_bs));
-        H = full(mipo_conf.dr(x01, hat_wk, hat_phik, hat_dphik, hat_yawk, gyro_IMU_bs));
+        y = full(mipo_conf.r(x01, hat_wk, hat_phik, hat_dphik, gyro_IMU_bs));
+        H = full(mipo_conf.dr(x01, hat_wk, hat_phik, hat_dphik, gyro_IMU_bs));
         
 
         % Innovation covariance
@@ -211,8 +209,6 @@ function [state_list, cov_list] = run_mipo_quat(re_sensor_data, param)
         % Kalman Gain * innovation
         err_state = P01 * H(mask,:)' * (S(mask,mask)\y(mask));
         % err_state = P01 * H' * (S\y);
-        %err_state(7:9)
-        
         % Update error states
         x_list(1:6, k+1) = x01(1:6) - err_state(1:6); 
         x_list(7:10, k+1) = Lq(x01(7:10)) * cayley_map(- err_state(7:9));
@@ -223,10 +219,6 @@ function [state_list, cov_list] = run_mipo_quat(re_sensor_data, param)
         cov_list(:,:,k+1) = ( eye(mipo_conf.error_state_size)-P01*H(mask,:)'*(S(mask,mask)\H(mask,:)))*P01;
         % cov_list(:,:,k+1) = ( eye(mipo_conf.error_state_size)-P01*H'*(S\H))*P01;
         cov_list(:,:,k+1) = (cov_list(:,:,k+1) + cov_list(:,:,k+1)')/2; 
-        %{
-        %}
-
-
     end
     
     state_list = x_list;

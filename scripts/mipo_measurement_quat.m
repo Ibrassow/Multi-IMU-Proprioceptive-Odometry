@@ -1,4 +1,4 @@
-function meas_residual = mipo_measurement_quat(x, wk, phik, dphik, yawk, foot_gyrok, param)
+function meas_residual = mipo_measurement_quat(x, wk, phik, dphik, foot_gyrok, param)
 
 % this measurement function calculates mipo measurement
 
@@ -78,44 +78,7 @@ function meas_residual = mipo_measurement_quat(x, wk, phik, dphik, yawk, foot_gy
         meas_residual((i-1)*meas_per_leg+10) = foot_pos((i-1)*3+3);   % assume ground always has 0 height 
     end
 
-    % Yaw comes from the mocap data, euler is euler
 
-    % euler = quat_to_euler(quat);
-
-    %{
-    w = quat(1);
-    x = quat(2);
-    y = quat(3);
-    z = quat(4);
-    cos_pitch_cos_yaw  = 1.0- 2.0 * (y*y + z*z);   
-	cos_pitch_sin_yaw  =      + 2.0 * (x*y + w*z);   
-    euler_yaw = atan2(cos_pitch_sin_yaw, cos_pitch_cos_yaw); 
-    %}
-
-
-    % Deal here with euler yaw - avoid unwrapping due to atan2 
-    
-    
-    
-    % Geodesic_distance
-    %q_yawk = euler_to_quat([0 0 yawk]);
-    %meas_residual(end) = 1 - norm(q_yawk.*quat);
-   
-    vm = [1 1 0]';
-    vm = vm / norm(vm);
-    
-
-
-    vquat = R_er * vm;
-
-    Ry = euler_to_rot([0,0,yawk]);
-
-    vy = Ry * vm;
-    %ss = sign(sum(vy - vquat));
-    %meas_residual(end) = ss * norm(vy - vquat);
-    meas_residual(end-1:end) = vy(1:2) - vquat(1:2); % since the z direction don't change for yaw rotation
-
-    % meas_residual(end) = yawk - euler_yaw;
     disp(size(meas_residual))
 
 

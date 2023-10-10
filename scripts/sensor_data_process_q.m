@@ -4,5 +4,6 @@ param.has_mocap = 1;  % mocap
 param.has_vilo = 0;  % has no vilo
 
 %resample sensor data
-re_sensor_data = resample_sensor_data(sensor_data, 0.005, param);
+%re_sensor_data = resample_sensor_data(sensor_data, 0.005, param);
 
+re_sensor_data_q = resample_sensor_data_quat(sensor_data, 0.005, param);

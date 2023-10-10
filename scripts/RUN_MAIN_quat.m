@@ -25,6 +25,7 @@ param.joint_foot_topic = '/unitree_hardware/joint_foot';
 %% read rosbag data
 % %generate sensor_data, modify param
 sensor_data_process;
+sensor_data_process_q;
 
 %% set some filter parameters for mipo and sipo
 param.init_cov = 0.1;
@@ -72,12 +73,12 @@ param.mipo_use_md_test_flag = 1;           % 0 means use contact flag
 
 %% Run MIPO filter
 tic 
-%[mipo_state_list, mipo_cov_list] = run_mipo(re_sensor_data, param);
+[mipo_state_list, mipo_cov_list] = run_mipo(re_sensor_data, param);
 mipo_time = toc
 
 %% Run MIQPO filter
 tic
-[miqpo_state_list, cov_list] = run_mipo_quat(re_sensor_data, param);
+[miqpo_state_list, cov_list] = run_mipo_quat(re_sensor_data_q, param);
 miqpo_time = toc
 
 
@@ -99,15 +100,15 @@ plot3(movmean(sipo_state_list(1,plot_start:plot_end),5,1), ...
 
 
 hold on;
-
-plot3(mipo_state_list(1,plot_start:plot_end),mipo_state_list(2,plot_start:plot_end),mipo_state_list(3,plot_start:plot_end), 'LineWidth',1.3);
 %}
-hold on;
+%plot3(mipo_state_list(1,plot_start:plot_end),mipo_state_list(2,plot_start:plot_end),mipo_state_list(3,plot_start:plot_end), 'LineWidth',1.3);
+
+%hold on;
 
 plot3(miqpo_state_list(1,plot_start:plot_end),miqpo_state_list(2,plot_start:plot_end),miqpo_state_list(3,plot_start:plot_end), 'LineWidth',1.3);
 
 % legend("Ground truth", "SIPO","MIPO", "MIQPO", "Location","northeast")
-legend("Ground truth", "MIQPO", "Location","northeast")
+legend("Ground truth", "MIPO (euler)", "MIQPO", "Location","northeast")
 axis equal
 
 xlabel("X Position (m)")
