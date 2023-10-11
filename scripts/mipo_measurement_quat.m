@@ -92,7 +92,6 @@ function meas_residual = mipo_measurement_quat(x, wk, phik, dphik, yawk, foot_gy
 
    
     meas_residual(end) = yawk - euler_yaw;
-    disp(size(meas_residual))
 
 
 
