@@ -78,7 +78,20 @@ function meas_residual = mipo_measurement_quat(x, wk, phik, dphik, foot_gyrok, p
         meas_residual((i-1)*meas_per_leg+10) = foot_pos((i-1)*3+3);   % assume ground always has 0 height 
     end
 
+    % Yaw comes from the mocap data, euler is euler
 
+    % euler = quat_to_euler(quat);
+
+    w = quat(1);
+    x = quat(2);
+    y = quat(3);
+    z = quat(4);
+    cos_pitch_cos_yaw  = 1.0- 2.0 * (y*y + z*z);   
+	cos_pitch_sin_yaw  =      + 2.0 * (x*y + w*z);   
+    euler_yaw = atan2(cos_pitch_sin_yaw, cos_pitch_cos_yaw);
+
+   
+    meas_residual(end) = yawk - euler_yaw;
     disp(size(meas_residual))
 
 

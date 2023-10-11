@@ -1,4 +1,4 @@
-function re_sensor_data = resample_sensor_data(sensor_data, dt, param)
+function re_sensor_data = resample_sensor_data(sensor_data, dt, param, continous_yaw)
 
 end_time_list = [sensor_data.accel_body_IMU.Time(end);
                  sensor_data.gyro_body_IMU.Time(end);
@@ -41,13 +41,15 @@ if param.has_mocap == 1
     for i=1:size(re_sensor_data.orient_mocap.Data,1)
         euler_angs_data(i,:) = quat_to_euler(re_sensor_data.orient_mocap.Data(i,:));
         % make yaw angle continous
-        if i>=2
-            if euler_angs_data(i-1,3)>pi/5*4 && euler_angs_data(i,3)<euler_angs_data(i-1,3)-pi
-                euler_angs_data(i,3) = euler_angs_data(i,3) + 2*pi;
-            elseif euler_angs_data(i-1,3)<-pi/5*4 && euler_angs_data(i,3)>euler_angs_data(i-1,3)+pi
-                euler_angs_data(i,3) = euler_angs_data(i,3) - 2*pi;
+        if continous_yaw == 1
+            if i>=2
+                if euler_angs_data(i-1,3)>pi/5*4 && euler_angs_data(i,3)<euler_angs_data(i-1,3)-pi
+                    euler_angs_data(i,3) = euler_angs_data(i,3) + 2*pi;
+                elseif euler_angs_data(i-1,3)<-pi/5*4 && euler_angs_data(i,3)>euler_angs_data(i-1,3)+pi
+                    euler_angs_data(i,3) = euler_angs_data(i,3) - 2*pi;
+                end
+    
             end
-            
         end
 
     end

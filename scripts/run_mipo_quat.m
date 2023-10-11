@@ -161,7 +161,7 @@ function [state_list, cov_list] = run_mipo_quat(re_sensor_data, param)
         for i = 1:param.num_leg
             if (param.mipo_use_md_test_flag == 0)
                 mipo_conf.R((i-1)*num_meas+7:(i-1)*num_meas+9,(i-1)*num_meas+7:(i-1)*num_meas+9) = ...
-                    (1 + (1 - ck(i)) * 1e5)*param.meas_n_zero_vel *dt*eye(3);
+                    param.meas_n_zero_vel *dt*eye(3);
                 mipo_conf.R((i-1)*num_meas+10,(i-1)*num_meas+10) = ...
                     (1 + (1 - ck(i)) * 1e5)*param.meas_n_foot_height *dt;
             else
@@ -200,6 +200,12 @@ function [state_list, cov_list] = run_mipo_quat(re_sensor_data, param)
                 end
             end
         end 
+        yaw_mes = y(end);
+        yaw_S = S(end,end);
+        yaw_MD = sqrt(yaw_mes^2/yaw_S);
+        if yaw_MD > 5
+            mask(end) = 0;
+        end
 
         
         mask = logical(mask);

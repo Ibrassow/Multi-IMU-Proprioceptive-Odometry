@@ -9,7 +9,7 @@ warning('off')
 % read rosbag, modify the path for different dataset
 disp('read rosbag');
 
-file_path = ['/home/ibrahima/CMU/research/',...
+file_path = ['E:\rosbag\',...
     '_2023-02-15-15-01-56.bag'] 
 
 param.fl_imu_topic = '/WT901_49_Data';
@@ -82,6 +82,9 @@ plot3(movmean(sipo_state_list(1,plot_start:plot_end),5,1), ...
       movmean(sipo_state_list(2,plot_start:plot_end),5,1), ...
       movmean(sipo_state_list(3,plot_start:plot_end),5,1), 'LineWidth',1.3);
 hold on;
+
+plot_start=1;
+plot_end = size(mipo_state_list(end,:),2);
 plot3(mipo_state_list(1,plot_start:plot_end),mipo_state_list(2,plot_start:plot_end),mipo_state_list(3,plot_start:plot_end), 'LineWidth',1.3);
 
 legend("Ground truth", "SIPO","MIPO", "Location","northeast")
