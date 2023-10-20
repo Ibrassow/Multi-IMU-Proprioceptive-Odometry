@@ -1,16 +1,16 @@
 function re_sensor_data = resample_sensor_data(sensor_data, dt, param, continous_yaw)
 
 end_time_list = [sensor_data.accel_body_IMU.Time(end);
-                 sensor_data.gyro_body_IMU.Time(end);
-                 sensor_data.accel_fl_IMU.Time(end);
-                 sensor_data.gyro_fl_IMU.Time(end);
-                 sensor_data.accel_fr_IMU.Time(end);
-                 sensor_data.gyro_fr_IMU.Time(end);
-                 sensor_data.accel_rl_IMU.Time(end);
-                 sensor_data.gyro_rl_IMU.Time(end);
-                 sensor_data.accel_rr_IMU.Time(end);
-                 sensor_data.gyro_rr_IMU.Time(end);
-                 sensor_data.contact_mode.Time(end)];
+                    sensor_data.gyro_body_IMU.Time(end);
+                    sensor_data.accel_fl_IMU.Time(end);
+                    sensor_data.gyro_fl_IMU.Time(end);
+                    sensor_data.accel_fr_IMU.Time(end);
+                    sensor_data.gyro_fr_IMU.Time(end);
+                    sensor_data.accel_rl_IMU.Time(end);
+                    sensor_data.gyro_rl_IMU.Time(end);
+                    sensor_data.accel_rr_IMU.Time(end);
+                    sensor_data.gyro_rr_IMU.Time(end);
+                    sensor_data.contact_mode.Time(end)];
 
 min_end_time = min(end_time_list);
 
@@ -51,7 +51,6 @@ if param.has_mocap == 1
     
             end
         end
-
     end
     euler_angs_data(:,3) = movmean(euler_angs_data(:,3),10,1);
     re_sensor_data.orient_mocap_euler = timeseries(euler_angs_data,re_sensor_data.orient_mocap.Time,'Name',"euler angle true");

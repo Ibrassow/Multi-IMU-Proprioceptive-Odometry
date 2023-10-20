@@ -1,26 +1,26 @@
-function meas_residual = mipo_measurement_quat(x, wk, phik, dphik, foot_gyrok, param)
+function meas_residual = mipo_measurement_quat(x, wk, phik, dphik, yawk, foot_gyrok, param)
 
-% this measurement function calculates mipo measurement
+    % this measurement function calculates mipo measurement
 
-% state x 
-%   - position          (1:3)
-%   - velocity          (4:6)
-%   - quaternion        (7:10)
-%   - foot1 pos         (11:13)
-%   - foot1 vel         (14:16)
-%   - foot2 pos         (17:19)
-%   - foot2 vel         (20:22)
-%   - foot3 pos         (23:25)
-%   - foot3 vel         (26:28)
-%   - foot4 pos         (29:31)
-%   - foot4 vel         (32:34)
-%   - body acc bias     (35:37)
-%   - body gyro bias    (38:40)
-%   - foot1 acc bias    (41:43)
-%   - foot2 acc bias    (44:46)
-%   - foot3 acc bias    (47:49)
-%   - foot4 acc bias    (50:52)
-%   - time  tk          (53)
+    % state x 
+    %   - position          (1:3)
+    %   - velocity          (4:6)
+    %   - quaternion        (7:10)
+    %   - foot1 pos         (11:13)
+    %   - foot1 vel         (14:16)
+    %   - foot2 pos         (17:19)
+    %   - foot2 vel         (20:22)
+    %   - foot3 pos         (23:25)
+    %   - foot3 vel         (26:28)
+    %   - foot4 pos         (29:31)
+    %   - foot4 vel         (32:34)
+    %   - body acc bias     (35:37)
+    %   - body gyro bias    (38:40)
+    %   - foot1 acc bias    (41:43)
+    %   - foot2 acc bias    (44:46)
+    %   - foot3 acc bias    (47:49)
+    %   - foot4 acc bias    (50:52)
+    %   - time  tk          (53)
 
     if ~iscolumn(x)
         x = x';
@@ -87,12 +87,11 @@ function meas_residual = mipo_measurement_quat(x, wk, phik, dphik, foot_gyrok, p
     y = quat(3);
     z = quat(4);
     cos_pitch_cos_yaw  = 1.0- 2.0 * (y*y + z*z);   
-	cos_pitch_sin_yaw  =      + 2.0 * (x*y + w*z);   
+    cos_pitch_sin_yaw  =      + 2.0 * (x*y + w*z);   
     euler_yaw = atan2(cos_pitch_sin_yaw, cos_pitch_cos_yaw);
 
-   
+    
     meas_residual(end) = yawk - euler_yaw;
-    disp(size(meas_residual))
 
 
 

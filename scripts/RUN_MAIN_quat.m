@@ -9,7 +9,7 @@ warning('off')
 % read rosbag, modify the path for different dataset
 disp('read rosbag');
 
-file_path = ['E:\rosbag\',...
+file_path = ['/home/ibrahima/CMU/research/',...
     '_2023-02-15-15-01-56.bag'] 
 
 param.fl_imu_topic = '/WT901_49_Data';
@@ -25,7 +25,6 @@ param.joint_foot_topic = '/unitree_hardware/joint_foot';
 %% read rosbag data
 % %generate sensor_data, modify param
 sensor_data_process;
-sensor_data_process_q;
 
 %% set some filter parameters for mipo and sipo
 param.init_cov = 0.1;
@@ -62,10 +61,10 @@ param.meas_n_zero_vel = 0.01;      % for foot imu
 
 
 %% Run baseline SIPO filter
+
 tic 
 [sipo_state_list] = run_sipo(re_sensor_data, param);
 sipo_time = toc
-
 
 param.mipo_use_foot_ang_contact_model = 1; % 0 means use zero velocity model
 param.mipo_use_md_test_flag = 1;           % 0 means use contact flag
@@ -76,10 +75,11 @@ tic
 [mipo_state_list, mipo_cov_list] = run_mipo(re_sensor_data, param);
 mipo_time = toc
 
+
 %% Run MIQPO filter
 re_sensor_data_2 = resample_sensor_data(sensor_data, 0.005, param,0);
 tic
-[miqpo_state_list, cov_list] = run_mipo_quat(re_sensor_data, param);
+[miqpo_state_list, cov_list] = run_mipo_quat(re_sensor_data_2, param);
 miqpo_time = toc
 
 
@@ -103,13 +103,13 @@ plot3(movmean(sipo_state_list(1,plot_start:plot_end),5,1), ...
 hold on;
 
 plot3(mipo_state_list(1,plot_start:plot_end),mipo_state_list(2,plot_start:plot_end),mipo_state_list(3,plot_start:plot_end), 'LineWidth',1.3);
-%}
+
 hold on;
 
 plot3(miqpo_state_list(1,plot_start:plot_end),miqpo_state_list(2,plot_start:plot_end),miqpo_state_list(3,plot_start:plot_end), 'LineWidth',1.3);
 
-% legend("Ground truth", "SIPO","MIPO", "MIQPO", "Location","northeast")
-legend("Ground truth", "MIQPO", "Location","northeast")
+legend("Ground truth", "SIPO","MIPO", "MIQPO", "Location","northeast")
+%legend("Ground truth", "MIQPO", "Location","northeast")
 axis equal
 
 xlabel("X Position (m)")

@@ -27,12 +27,10 @@ kf_conf.error_state_size = kf_conf.state_size - 1;
 %   - foot4 acc bias    (50:52)
 %   - time  tk          (53)
 
-temp_fix_yaw = 1;
-
 
 param.mipo_meas_per_leg = 11;  % 3 3 3 1 
 kf_conf.meas_size = param.mipo_meas_per_leg * param.num_leg + 1; % yaw
-param.mipo_meas_size = kf_conf.meas_size + temp_fix_yaw;
+param.mipo_meas_size = kf_conf.meas_size;
 
 kf_conf.ctrl_size = 19;  
 % control u 
@@ -67,7 +65,7 @@ kf_conf.Q2 = diag([1e-4*ones(3,1);   % BODY acc noise
            [1e-4*ones(3,1)],4,1);    % foot acc noise
                    0]);
 
-kf_conf.R = 1e-2*eye(kf_conf.meas_size+temp_fix_yaw);
+kf_conf.R = 1e-2*eye(kf_conf.meas_size);
 
 
 % get process and process jacobians
@@ -114,7 +112,8 @@ s_phik = casadi.MX.sym('phik', 12);
 s_wk = casadi.MX.sym('wk', 3);
 s_dphik = casadi.MX.sym('dphik', 12);
 s_foot_gyrok = casadi.MX.sym('foot_gyro', 12);
-s_r = mipo_measurement_quat(s_xk, s_wk, s_phik, s_dphik, s_foot_gyrok, param);
+s_yawk = casadi.MX.sym('yaw', 1);
+s_r = mipo_measurement_quat(s_xk, s_wk, s_phik, s_dphik, s_yawk, s_foot_gyrok, param);
 
 
 
@@ -126,9 +125,8 @@ Ekm(11:53, 10:52) = eye(43);
 
 s_R = jacobian(s_r, s_xk) * Ekm; 
 
-kf_conf.r = Function('meas',{s_xk, s_wk, s_phik, s_dphik, s_foot_gyrok},{s_r});
-kf_conf.dr = Function('meas_jac',{s_xk, s_wk, s_phik, s_dphik, s_foot_gyrok},{s_R});
-
+kf_conf.r = Function('meas',{s_xk, s_wk, s_phik, s_dphik, s_yawk, s_foot_gyrok},{s_r});
+kf_conf.dr = Function('meas_jac',{s_xk, s_wk, s_phik, s_dphik, s_yawk, s_foot_gyrok},{s_R});
 
 
 % foot IMU frame has a transformation wrt foot center 
