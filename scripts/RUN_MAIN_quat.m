@@ -1,3 +1,5 @@
+
+
 %% init sensor data
 run ../kinematics_init_lc;  % add libraries generate kinematics as matlab functions
 run ../param_init;          % get param as global variable
@@ -108,7 +110,7 @@ hold on;
 
 plot3(miqpo_state_list(1,plot_start:plot_end),miqpo_state_list(2,plot_start:plot_end),miqpo_state_list(3,plot_start:plot_end), 'LineWidth',1.3);
 
-legend("Ground truth", "SIPO","MIPO", "MIQPO", "Location","northeast")
+legend("Ground truth", "SIPO","Multi-IMU PO (euler)", "Multi-IMU PO (quaternion)", "Location","northeast")
 %legend("Ground truth", "MIQPO", "Location","northeast")
 axis equal
 
